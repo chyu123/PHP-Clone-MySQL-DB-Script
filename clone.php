@@ -10,11 +10,13 @@ $db_server_master = $conf_array["master"]["host"];
 $db_user_master = $conf_array["master"]["user"];
 $db_pass_master = $conf_array["master"]["pass"];
 $db_master = $conf_array["master"]["database"];
-
+$db_tables = $conf_array["master"]["tables"];
 $db_server_slave = $conf_array["slave"]["host"];
 $db_user_slave = $conf_array["slave"]["user"];
 $db_pass_slave = $conf_array["slave"]["pass"];
 $db_slave = $conf_array["slave"]["database"];
+
+$check_table = chk_tables($db_tables);
 
 //===============DB Connection =====================
 
@@ -34,12 +36,16 @@ if (!$conn_slave) {
 
 //===============list table in DB ===================
 
-$table_list = showtables($conn_master, $db_master);
+if($check_table["check"] == "all"){
+    $table_list = showtables($conn_master, $db_master);
+}else{
+    $table_list = $check_table;
+}
 
 //==================process==========================
 $i = 1;
-while ($i < count($table_list)) {
-    copy_data_table($conn_master, $conn_slave,$db_master,$table_list[$i][0]);
+while ($i < $table_list["count"]) {
+    copy_data_table($conn_master, $conn_slave,$table_list[$i][0]);
     $i++;
 }
 

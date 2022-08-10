@@ -9,10 +9,11 @@ function showtables($conn_db,$db)
     while ($row1 = $result->fetch_array(MYSQLI_NUM)) {
         $table_list[] = $row1;
     }
+    $table_list["count"] = count($table_list);
     return $table_list;
 }
 
-function copy_data_table($conn_db_master, $conn_db_slave,$db,$table)
+function copy_data_table($conn_db_master, $conn_db_slave,$table)
 {
     erase_table($conn_db_slave, $table);
     $sql_copy = "select * from ".$table;
@@ -60,6 +61,25 @@ function make_sql_string($table, $row)
 
     return $sql;
 
+}
+
+function chk_tables($var)
+{
+    if(strpos($var, "*") === false){
+        $result["check"] = "list";
+        $result["result"] = preg_split ("/\,/", $var);
+        $k = count($result["result"]);
+        for ($i=0; $i < $k; $i++) { 
+            $result[$i+1][0] = $result["result"][$i];
+        }
+        $result[0][0]="";
+        $result["count"] = $k+1;
+    }else{
+        $result["check"] = "all";
+        $result["result"] = "";
+        $result["count"] = 0;
+    }
+    return $result;
 }
 
 
